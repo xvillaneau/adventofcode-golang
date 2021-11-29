@@ -25,7 +25,7 @@ func totFuelReq(mass int) int {
 func main() {
 	fmt.Println("AoC 2019 Day 1")
 
-	mods, err := lib.ReadNumbers(2019, 1)
+	mods, err := lib.ReadNumLn(2019, 1)
 	if err != nil {
 		fmt.Println(err)
 		return

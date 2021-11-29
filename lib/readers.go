@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"strings"
 )
 
 func ReadBytes (year int, day int) ([]byte, error) {
@@ -14,37 +15,49 @@ func ReadBytes (year int, day int) ([]byte, error) {
 	return os.ReadFile(path.Join("data", ydir, fname))
 }
 
-func ReadLines (year int, day int) ([]string, error) {
-	var lines []string
+func ReadFields (year int, day int, sep byte) ([]string, error) {
+	var fields []string
 
 	b, rderr := ReadBytes(year, day)
 	if rderr != nil {
-		return lines, rderr
+		return fields, rderr
 	}
 
-	for _, line := range(bytes.Split(b, []byte{'\n'})) {
-		if len(line) != 0 {
-			lines = append(lines, string(line))
+	for _, field := range(bytes.Split(b, []byte{sep})) {
+		if len(field) != 0 {
+			fields = append(fields, string(field))
 		}
 	}
-	return lines, nil
+	return fields, nil
 }
 
-func ReadNumbers (year int, day int) ([]int, error) {
+func ReadLines (year int, day int) ([]string, error) {
+	return ReadFields(year, day, byte('\n'))
+}
+
+func ReadNumbers (year int, day int, sep byte) ([]int, error) {
 	var nums []int
 
-	lines, rderr := ReadLines(year, day)
+	fields, rderr := ReadFields(year, day, sep)
 	if rderr != nil {
 		return nums, rderr
 	}
 
-	for _, line := range(lines) {
-		n, perr := strconv.Atoi(string(line))
+	for _, field := range(fields) {
+		n, perr := strconv.Atoi(strings.TrimSpace(string(field)))
 		if perr != nil {
 			return nums, perr
 		}
 		nums = append(nums, n)
 	}
 	return nums, nil
+}
+
+func ReadNumLn (year int, day int) ([]int, error) {
+	return ReadNumbers(year, day, '\n')
+}
+
+func ReadNumComma (year int, day int) ([]int, error) {
+	return ReadNumbers(year, day, ',')
 }
 
